@@ -15,8 +15,8 @@ bool BackgroundLayer::init() {
 	/**
 	 * 随机设置壁纸
 	 */
-	int RandomNumber = CCRANDOM_0_1()*10;
-	int bgNumber = RandomNumber % 5;
+	int randomNumber = CCRANDOM_0_1()*10;
+	int bgNumber = randomNumber % 5;
 	switch (bgNumber) {
 	case 0:
 		Image_One = Sprite::create("res/image/bg/bg1.jpg");
@@ -71,13 +71,6 @@ bool BackgroundLayer::init() {
 
 	this->addChild(menu, 2);
 
-	/*auto _testSprite = Sprite::create("CloseNormal.png");
-	 _testSprite->setPosition(Point(100, 100));
-	 this->addChild(_testSprite);*/
-
-
-	log("width : %f , height : %f", MyWinSize.width, MyWinSize.height);
-
 	/*
 	 * 初始化三个stage
 	 */
@@ -130,11 +123,15 @@ bool BackgroundLayer::init() {
 void BackgroundLayer::Start(Ref* pSender) {
 
 	log("%s","BackgroundLayer::Start()");
-	auto MyWinSize = Director::getInstance()->getVisibleSize();
 	isStart=true;//表示游戏开始
 
 	this->removeChild(menu);
 	this->removeChild(GameName);
+
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	Label* scoreTitle = Label::createWithTTF("Score", "fonts/Marker Felt.ttf", 24);
+	scoreTitle->setPosition(Vec2(origin.x + MyWinSize.width/2,origin.y + MyWinSize.height/2));
+	this->addChild(scoreTitle, 1);
 
 	auto stageMove = MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height / 2));
 	stageSprite[0]->runAction(stageMove);
@@ -295,26 +292,23 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 
 	if(successFlag==true){
 
-	auto playMove = MoveTo::create(2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
+		auto playMove = MoveTo::create(2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
+		/**
+		 * palyer走到stage之后，stage再进行移动。
+		 */
 
-	/**
-	 * palyer走到stage之后，stage再进行移动。
-	 */
 
-
-	/*player->getPlayer()->stopAllActions();*/
-	//player->getPlayer()->runAction(player->getWalkAnimate());
-	player->Walk();
-	auto playSeq  =Sequence::create(playMove,
-				CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stageMove,this)),
-				NULL
-				);
-	player->getPlayer()->runAction(playSeq);
-	/*
-	 *背景进行移动
-	 */
-	this->schedule(schedule_selector(BackgroundLayer::bgMove));
-	moveComplete = true;
+		player->Walk();
+		auto playSeq  =Sequence::create(playMove,
+					CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stageMove,this)),
+					NULL
+					);
+		player->getPlayer()->runAction(playSeq);
+		/*
+		 *背景进行移动
+		 */
+		this->schedule(schedule_selector(BackgroundLayer::bgMove));
+		moveComplete = true;
 
 	}else{
 
@@ -341,12 +335,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 		RotateTo* RoDown_Stick = RotateTo::create(1,180);
 		stick->runAction(RoDown_Stick);
 
-		/*
-		 * 游戏结束，显示从新开始界面
-		 */
-		gameOverLayer = GameOverLayer::create();
-		this->addChild(gameOverLayer,8);
-
+		gameOver();
 	}
 }
 
@@ -368,9 +357,8 @@ void BackgroundLayer::bgMove(float){
 
 	int X1 = Image_One->getPositionX();
 	int X2 = Image_Two->getPositionX();
-	int speed = 50;
-	X1 -= speed;
-	X2 -= speed;
+	X1 -= BG_SPEED;
+	X2 -= BG_SPEED;
 	Size size = Image_One->getContentSize();
 	if (X1 < -size.width / 2) {
 		X2 = size.width / 2;
@@ -384,6 +372,42 @@ void BackgroundLayer::bgMove(float){
 	Image_Two->setPositionX(X2);
 
 }
-
+void BackgroundLayer::gameOver(){
+	/*
+	* 游戏结束，显示从新开始界面
+	*/
+	gameOverLayer = GameOverLayer::create();
+	this->addChild(gameOverLayer,8);
+}
+BackgroundLayer::BackgroundLayer(){
+//	isStart = false;
+//	MyWinSize=nullptr;
+//	menu=nullptr;
+////	Sprite* GameName;
+////	Sprite* Image_One;
+////	Sprite* Image_Two;
+////	Sprite* stageSprite[3];
+//	stageNumber=1;//初始值设为1
+//	NowStage=0;//player所在的stage
+//	LastStage=2;//player所在前一个stage
+//	NextStage=1;//player将要走到的stage
+////	Player* player;
+////	Sprite* stick;
+////	double TouchLength;//用来存储我们棍子的长度
+////	double DestLengthMin;
+////	double DestLengthMax;
+//	scoreCount=0;
+//	successFlag=false;//true表示player能够成功移动到下一个梯子
+//	moveComplete=false;//true表示移动到下一个平台动作完毕。
+//
+//
+//
+////	Vec2 StickPoint;
+////	int kickId;
+////
+//     gameOverLayer = nullptr;
+//
+//	EventListenerTouchOneByOne* touchListener;
+}
 
 

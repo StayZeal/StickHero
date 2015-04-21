@@ -14,7 +14,8 @@
 USING_NS_CC;
 class BackgroundLayer:public Layer {
 private:
-	static const int STICK_SPEED=5;//棍子增长的速度，即游戏的难度；
+	static const int STICK_SPEED = 5;//棍子增长的速度，即游戏的难度；
+	static const int BG_SPEED = 50;
 	bool isStart = false;
 	Size MyWinSize;
 	Menu* menu;
@@ -32,8 +33,8 @@ private:
 	double DestLengthMin;
 	double DestLengthMax;
     int scoreCount=0;
-	bool successFlag=false;//true表示player能够成功移动到下一个梯子
-	bool moveComplete=false;//true表示移动到下一个平台动作完毕。
+	bool successFlag;//true表示player能够成功移动到下一个梯子
+	bool moveComplete;//true表示移动到下一个平台动作完毕。
 
 
 
@@ -45,16 +46,17 @@ private:
 	EventListenerTouchOneByOne* touchListener;
 
 public:
+	BackgroundLayer();
 	CREATE_FUNC(BackgroundLayer);
 	virtual bool init();
-	virtual void Start(Ref* pSender);
+	void Start(Ref* pSender);
 	void bgMove(float);//背景的移动
 
-	virtual void addStage();
-	virtual void stageMove();
-	virtual bool onTouchBegan(Touch* pTouch, Event* pEvent);
-	virtual void onTouchMoved(Touch* pTouch, Event* pEvent);
-	virtual void onTouchEnded(Touch* pTouch, Event* pEvent);
+	void addStage();
+	void stageMove();
+	bool onTouchBegan(Touch* pTouch, Event* pEvent);
+	void onTouchMoved(Touch* pTouch, Event* pEvent);
+	void onTouchEnded(Touch* pTouch, Event* pEvent);
 
 	void addStick();
 	void StickLength(float);
@@ -63,6 +65,7 @@ public:
 	void stickCallBack(bool successFlag);
 	void initStick();//隐藏stick
 	void stopAudio(int audioId);
+	void gameOver();
 };
 
 #endif /* BACKGROUNDLAYER_H_ */
