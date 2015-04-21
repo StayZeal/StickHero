@@ -17,15 +17,20 @@ private:
 	Animation* StayAnimation;
 	Animate* WalkAnimate;
 	Animate* StayAnimate;
+
 public:
+	virtual ~Player();
+
 	bool init();
 	Sprite* getPlayer();
 	//CREATE_FUNC(Player);
 	void SetPosition(Vec2);
-	void Walk(Vec2);
+	void Walk();
 	void Stay();
 	void Stop();
 	void Start(Vec2);
+	Animate* getWalkAnimate();
+	Animate* getStayAnimate();
 
 };
 

@@ -46,7 +46,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // run
     director->runWithScene(scene);
 
-   // SimpleAudioEngine::getInstance()->playBackgroundMusic("res/sound/stick_grow_loop.ogg", true);
+    SimpleAudioEngine::getInstance()->playBackgroundMusic("res/sound1/bg_sea.mp3", true);
 
     return true;
 }
@@ -56,7 +56,7 @@ void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -64,5 +64,5 @@ void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+     SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }

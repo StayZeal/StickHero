@@ -26,18 +26,26 @@ bool Player::init() {
 	StayAnimation->setLoops(10000);
 	StayAnimate = Animate::create(StayAnimation);
 
+	StayAnimate->retain();
+
 	//2
 	frameVector.clear();
 	for (int i = 1; i <= 5; i++) {
 
 		char pngName[260] = { 0 };
-		sprintf(pngName, "walk%d.png", i);
+		sprintf(pngName, "res/image/anim1/walk%d.png", i);
 		frameVector.pushBack(SpriteFrame::create(pngName, Rect(0, 0, 54, 58)));
 	}
 	WalkAnimation = Animation::createWithSpriteFrames(frameVector, 1);
 	WalkAnimation->setRestoreOriginalFrame(false);
 	WalkAnimation->setLoops(10000);
 	WalkAnimate = Animate::create(WalkAnimation);
+
+
+	/**
+	 * 在析构函数中进行释放，否则会被自动释放；导致空指针
+	 */
+	WalkAnimate->retain();
 
 	return true;
 }
@@ -50,6 +58,7 @@ void Player::SetPosition(Vec2 _pos) {
 
 //4
 void Player::Stay() {
+	//_player->runAction(WalkAnimate);
 	_player->runAction(StayAnimate);
 }
 //5
@@ -57,10 +66,12 @@ void Player::Stop() {
 	_player->stopAllActions();
 }
 //6
-void Player::Walk(Vec2 _dec) {
-	log("Player::Walk");
-	MoveTo* move = MoveTo::create(1.5f, _dec);
-	_player->runAction(move);
+void Player::Walk( ) {
+	log("Player::Walk start");
+	/* MoveTo* move = MoveTo::create(0.2, _dec);
+	_player->runAction(move);*/
+	_player->runAction(WalkAnimate);
+	log("Player::Walk end");
 }
 //7
 void Player::Start(Vec2 _dec) {
@@ -72,6 +83,25 @@ Sprite* Player::getPlayer() {
 	return _player;
 }
 
+Animate* Player::getWalkAnimate(){
+
+	log("Player::getWalkAnimate()");
+	if(WalkAnimate!=nullptr){
+		log("WalkAnimate is not null");
+		return WalkAnimate;
+	}else{
+		log("WalkAnimate is null");
+		return nullptr;
+	}
+}
+Animate* Player::getStayAnimate(){
+
+	return StayAnimate;
+}
+Player::~Player(){
+	StayAnimate->release();
+	WalkAnimate->release();
+}
 
 
 

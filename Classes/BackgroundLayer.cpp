@@ -131,7 +131,6 @@ void BackgroundLayer::Start(Ref* pSender) {
 
 	log("%s","BackgroundLayer::Start()");
 	auto MyWinSize = Director::getInstance()->getVisibleSize();
-	log("width : %f , height : %f", MyWinSize.width, MyWinSize.height);
 	isStart=true;//表示游戏开始
 
 	this->removeChild(menu);
@@ -140,7 +139,6 @@ void BackgroundLayer::Start(Ref* pSender) {
 	auto stageMove = MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height / 2));
 	stageSprite[0]->runAction(stageMove);
 
-	//bgMove(Vec2(-MyWinSize.width/2+100,0));
 
  	player->getPlayer()->runAction(MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height)));
 
@@ -161,14 +159,9 @@ void BackgroundLayer::addStage() {
 
 	auto random = MyWinSize.width / 2 +CCRANDOM_0_1()*MyWinSize.width/3;
 	auto stageMove = MoveTo::create(0.2,
-			Vec2(random ,
-			     stageSprite[stageNumber]->getContentSize().height/2));
-
-
+			Vec2(random , stageSprite[stageNumber]->getContentSize().height/2));
 
 	stageSprite[stageNumber]->runAction(stageMove);
-
-
 
 	if (stageNumber + 1 <= 2) {
 		stageNumber += 1;
@@ -201,9 +194,6 @@ void BackgroundLayer::stageMove() {
 
 	//player->getPlayer()->Walk(Vec2());
 
-//	bgMove(Vec2(100-stageSprite[NowStage]->getPositionX(),0));
-
-
 	StickPoint = Vec2(100+stageSprite[NowStage]->getScaleX()*stageSprite[NowStage]->getContentSize().width/2,
 			stageSprite[0]->getContentSize().height);
 	initStick();
@@ -212,10 +202,7 @@ void BackgroundLayer::stageMove() {
 	 * 跟随stage进行移动
 	 */
 	player->getPlayer()->runAction(MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height )));
-
 	addStage();
-	//addStick();
-
 	successFlag = false;//重置successFlag
 }
 
@@ -223,10 +210,8 @@ bool BackgroundLayer::onTouchBegan(Touch* pTouch, Event* pEvent)
 {
 	log("%s","BackgroundLayer::onTouchBegan()");
 	if(isStart){
-		//stageMove();
 		addStick();
 	}
-
     return true;
 }
 void BackgroundLayer::onTouchMoved(Touch* pTouch, Event* pEvent)
@@ -310,22 +295,26 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 
 	if(successFlag==true){
 
-	auto playMove = MoveTo::create(0.2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
+	auto playMove = MoveTo::create(2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
 
-	/*
+	/**
 	 * palyer走到stage之后，stage再进行移动。
 	 */
+
+
+	/*player->getPlayer()->stopAllActions();*/
+	//player->getPlayer()->runAction(player->getWalkAnimate());
+	player->Walk();
 	auto playSeq  =Sequence::create(playMove,
 				CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stageMove,this)),
 				NULL
 				);
-
 	player->getPlayer()->runAction(playSeq);
 	/*
 	 *背景进行移动
 	 */
 	this->schedule(schedule_selector(BackgroundLayer::bgMove));
-		moveComplete = true;
+	moveComplete = true;
 
 	}else{
 
@@ -347,8 +336,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 		auto playerDown = MoveTo::create(0.2,playerDownPoint);
 		auto playerSeq = Sequence::create(playerMove,
 				                          playerDown,
-										  NULL
-				            );
+										  NULL);
 		player->getPlayer()->runAction(playerSeq);
 		RotateTo* RoDown_Stick = RotateTo::create(1,180);
 		stick->runAction(RoDown_Stick);
@@ -357,7 +345,6 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 		 * 游戏结束，显示从新开始界面
 		 */
 		gameOverLayer = GameOverLayer::create();
-
 		this->addChild(gameOverLayer,8);
 
 	}
@@ -366,7 +353,6 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 void BackgroundLayer::initStick(){
 
 	log("BackgroundLayer::hideStick()");
-
 	stick->setScaleY(1);//还原棍子
 	stick->setRotation(0);
 	stick->setPosition(StickPoint);
@@ -379,7 +365,6 @@ void BackgroundLayer::stopAudio(int audioId){
 void BackgroundLayer::bgMove(float){
 
 	log("BackgroundLayer::bgMove()-->");
-
 
 	int X1 = Image_One->getPositionX();
 	int X2 = Image_Two->getPositionX();
