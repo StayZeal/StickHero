@@ -1,19 +1,36 @@
 /*
  * BackgroundLayer.cpp
  *
- *  Created on: 2015年4月11日
+ *  Created on: 2015骞�4鏈�11鏃�
  *      Author: Administrator
  */
 
 #include "BackgroundLayer.h"
+#include "IconvTest.h"
+
 using namespace CocosDenshion;
+
 bool BackgroundLayer::init() {
 	if (!Layer::init()) {
 		return false;
 	}
+
+
+	/*std::string fromStr = "中文测试Iconv";
+	size_t inLen = strlen(fromStr.data());
+	size_t outLen = inLen << 1;
+	char *toStr = (char *)malloc(outLen);
+	log("%d,%s",__LINE__, fromStr.data());
+	//char *p = (char*)(fromStr.getCString());
+	char *p = (char*)fromStr.data();
+	IconvTest::gbk2utf8(p, inLen, toStr, outLen);
+	log("%d,%s",__LINE__, toStr);
+
+	log("测试");*/
+
 	MyWinSize = Director::getInstance()->getVisibleSize();
 	/**
-	 * 随机设置壁纸
+	 * 闅忔満璁剧疆澹佺焊
 	 */
 	int randomNumber = CCRANDOM_0_1()*10;
 	int bgNumber = randomNumber % 5;
@@ -72,12 +89,12 @@ bool BackgroundLayer::init() {
 	this->addChild(menu, 2);
 
 	/*
-	 * 初始化三个stage
+	 * 鍒濆鍖栦笁涓猻tage
 	 */
 	for (int i = 0; i < 3; i++) {
 		stageSprite[i] = Sprite::create("res/image/stage1.png");
 	}
-	stageSprite[0]->setScaleX(30);//设置固定宽度
+	stageSprite[0]->setScaleX(30);//璁剧疆鍥哄畾瀹藉害
 
 	for (int i = 1; i < 3; i++) {
 		stageSprite[i]->setPosition(
@@ -94,7 +111,7 @@ bool BackgroundLayer::init() {
 	}
 
 	/**
-	 * 添加监听器,并绑定监听事件
+	 * 娣诲姞鐩戝惉鍣�,骞剁粦瀹氱洃鍚簨浠�
 	 */
 	touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(false);
@@ -105,7 +122,7 @@ bool BackgroundLayer::init() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	/**
-	 * 添加英雄
+	 * 娣诲姞鑻遍泟
 	 */
 	player = new Player();
 	player->init();
@@ -118,18 +135,33 @@ bool BackgroundLayer::init() {
  	stick->setPosition(-stick->getContentSize().width,-stick->getContentSize().height);
  	this->addChild(stick,5);
 
+
 	return true;
 }
 void BackgroundLayer::Start(Ref* pSender) {
 
 	log("%s","BackgroundLayer::Start()");
-	isStart=true;//表示游戏开始
+	isStart=true;//琛ㄧず娓告垙寮�濮�
 
 	this->removeChild(menu);
 	this->removeChild(GameName);
 
+	std::string fromStr = "中文测试Iconv";
+	size_t inLen = strlen(fromStr.data());
+	size_t outLen = inLen << 1;
+	char *toStr = (char *)malloc(outLen);
+	log("%d,%s",__LINE__, fromStr.data());
+	//char *p = (char*)(fromStr.getCString());
+	char *p = (char*)fromStr.data();
+	IconvTest::gbk2utf8(p, inLen, toStr, outLen);
+	log("%d,%s",__LINE__, toStr);
+
+	log("测试");
+
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Label* scoreTitle = Label::createWithTTF("Score", "fonts/Marker Felt.ttf", 24);
+	//scoreTitle = Label::createWithBMFont("fonts/bitmapFontChinese.fnt",toStr,TextHAlignment::CENTER,50);
+	scoreTitle = Label::createWithTTF(toStr, "fonts/arial.ttf", 50);
+	//scoreTitle = Label::createWithTTF(toStr, "fonts/Marker Felt.ttf", 50);
 	scoreTitle->setPosition(Vec2(origin.x + MyWinSize.width/2,origin.y + MyWinSize.height/2));
 	this->addChild(scoreTitle, 1);
 
@@ -171,12 +203,12 @@ void BackgroundLayer::stageMove() {
 	log("BackgroundLayer::stageMove()-->stageNumber:%d",stageNumber);
 
 	/**
-	 * 停止背景移动
+	 * 鍋滄鑳屾櫙绉诲姩
 	 */
 	this->unschedule(schedule_selector(BackgroundLayer::bgMove));
 
 	/*
-	 * 停止播放走路音效（kick.ogg）
+	 * 鍋滄鎾斁璧拌矾闊虫晥锛坘ick.ogg锛�
 	 */
 	SimpleAudioEngine::getInstance()->pauseEffect(kickId);
 	NowStage = stageNumber == 0 ? 2 : stageNumber - 1;
@@ -189,18 +221,17 @@ void BackgroundLayer::stageMove() {
 					stageSprite[0]->getContentSize().height / 2));
 	stageSprite[LastStage]->runAction(lastStageMove);
 
-	//player->getPlayer()->Walk(Vec2());
 
 	StickPoint = Vec2(100+stageSprite[NowStage]->getScaleX()*stageSprite[NowStage]->getContentSize().width/2,
 			stageSprite[0]->getContentSize().height);
 	initStick();
 
 	/*
-	 * 跟随stage进行移动
+	 * 璺熼殢stage杩涜绉诲姩
 	 */
 	player->getPlayer()->runAction(MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height )));
 	addStage();
-	successFlag = false;//重置successFlag
+	successFlag = false;//閲嶇疆successFlag
 }
 
 bool BackgroundLayer::onTouchBegan(Touch* pTouch, Event* pEvent)
@@ -226,7 +257,7 @@ void BackgroundLayer::onTouchEnded(Touch* pTouch, Event* pEvent)
 void BackgroundLayer::addStick()
 {
 	log("%s","BackgroundLayer::addStick()");
-	stick->setScaleY(1);//还原棍子
+	stick->setScaleY(1);//杩樺師妫嶅瓙
 	stick->setRotation(0);
     stick->setPosition(StickPoint);
     this->schedule(schedule_selector(BackgroundLayer::StickLength));
@@ -249,7 +280,7 @@ void BackgroundLayer::RotateStickAndGo(){
 	DestLengthMin = abs(stageSprite[NextStage]->getPositionX() - stageSprite[NowStage]->getPositionX()) - stageSprite[NextStage]->getContentSize().width*stageSprite[NextStage]->getScaleX()/2 - stageSprite[NowStage]->getContentSize().width*stageSprite[NowStage]->getScaleX()/2;
 
 	DestLengthMax = DestLengthMin + stageSprite[NextStage]->getContentSize().width*stageSprite[NextStage]->getScaleX();
-	RotateTo* Ro_Stick = RotateTo::create(1, 90); //旋转90度
+	RotateTo* Ro_Stick = RotateTo::create(1, 90); //鏃嬭浆90搴�
 	RotateTo* RoDown_Stick = RotateTo::create(1,180);
 
 	log("ToTouchLength:%f,DestLengthMin:%f,DestLengthMax:%f",TouchLength,DestLengthMin,DestLengthMax);
@@ -258,7 +289,11 @@ void BackgroundLayer::RotateStickAndGo(){
 	if(TouchLength<DestLengthMin || TouchLength > DestLengthMax)
 	{
 
-		scoreCount++;//记录分数
+		scoreCount++;//璁板綍鍒嗘暟
+//        scoreTitle->setString(std::to_string(scoreCount));
+
+		scoreTitle->setString(StringUtils::toString(scoreCount));
+
 		successFlag=false;
 	    //stick->runAction(RoDown_Stick);
 	}
@@ -292,9 +327,9 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 
 	if(successFlag==true){
 
-		auto playMove = MoveTo::create(2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
+		auto playMove = MoveTo::create(0.2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
 		/**
-		 * palyer走到stage之后，stage再进行移动。
+		 * palyer璧板埌stage涔嬪悗锛宻tage鍐嶈繘琛岀Щ鍔ㄣ��
 		 */
 
 
@@ -305,7 +340,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 					);
 		player->getPlayer()->runAction(playSeq);
 		/*
-		 *背景进行移动
+		 *鑳屾櫙杩涜绉诲姩
 		 */
 		this->schedule(schedule_selector(BackgroundLayer::bgMove));
 		moveComplete = true;
@@ -319,7 +354,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 				  + player->getPlayer()->getContentSize().width/3,
 				    stageSprite[NextStage]->getContentSize().height
 			 );
-		//player掉落之后的位置
+		//player鎺夎惤涔嬪悗鐨勪綅缃�
 		auto playerDownPoint = Vec2(
 				  stageSprite[NowStage]->getPositionX()
 				  + stageSprite[NowStage]->getContentSize().width*stageSprite[NowStage]->getScaleX()/2
@@ -342,7 +377,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 void BackgroundLayer::initStick(){
 
 	log("BackgroundLayer::hideStick()");
-	stick->setScaleY(1);//还原棍子
+	stick->setScaleY(1);//杩樺師妫嶅瓙
 	stick->setRotation(0);
 	stick->setPosition(StickPoint);
 }
@@ -355,59 +390,40 @@ void BackgroundLayer::bgMove(float){
 
 	log("BackgroundLayer::bgMove()-->");
 
-	int X1 = Image_One->getPositionX();
-	int X2 = Image_Two->getPositionX();
-	X1 -= BG_SPEED;
-	X2 -= BG_SPEED;
+	int x1 = Image_One->getPositionX();
+	int x2 = Image_Two->getPositionX();
+	x1 -= BG_SPEED;
+	x2 -= BG_SPEED;
 	Size size = Image_One->getContentSize();
-	if (X1 < -size.width / 2) {
-		X2 = size.width / 2;
-		X1 = size.width / 2 + size.width;
+	if (x1 < -size.width / 2) {
+		x2 = size.width / 2;
+		x1 = size.width / 2 + size.width;
 	}
-	if (X2 < -size.width / 2) {
-		X1 = size.width / 2;
-		X2 = size.width / 2 + size.width;
+	if (x2 < -size.width / 2) {
+		x1 = size.width / 2;
+		x2 = size.width / 2 + size.width;
 	}
-	Image_One->setPositionX(X1);
-	Image_Two->setPositionX(X2);
+	Image_One->setPositionX(x1);
+	Image_Two->setPositionX(x2);
 
 }
 void BackgroundLayer::gameOver(){
 	/*
-	* 游戏结束，显示从新开始界面
+	* 娓告垙缁撴潫锛屾樉绀轰粠鏂板紑濮嬬晫闈�
 	*/
 	gameOverLayer = GameOverLayer::create();
 	this->addChild(gameOverLayer,8);
 }
 BackgroundLayer::BackgroundLayer(){
-//	isStart = false;
-//	MyWinSize=nullptr;
-//	menu=nullptr;
-////	Sprite* GameName;
-////	Sprite* Image_One;
-////	Sprite* Image_Two;
-////	Sprite* stageSprite[3];
-//	stageNumber=1;//初始值设为1
-//	NowStage=0;//player所在的stage
-//	LastStage=2;//player所在前一个stage
-//	NextStage=1;//player将要走到的stage
-////	Player* player;
-////	Sprite* stick;
-////	double TouchLength;//用来存储我们棍子的长度
-////	double DestLengthMin;
-////	double DestLengthMax;
-//	scoreCount=0;
-//	successFlag=false;//true表示player能够成功移动到下一个梯子
-//	moveComplete=false;//true表示移动到下一个平台动作完毕。
-//
-//
-//
-////	Vec2 StickPoint;
-////	int kickId;
-////
-//     gameOverLayer = nullptr;
-//
-//	EventListenerTouchOneByOne* touchListener;
+ 	isStart = false;
+	stageNumber=1;//鍒濆鍊艰涓�1
+	NowStage=0;//player鎵�鍦ㄧ殑stage
+	LastStage=2;//player鎵�鍦ㄥ墠涓�涓猻tage
+	NextStage=1;//player灏嗚璧板埌鐨剆tage
+	scoreCount=0;
+ 	successFlag=false;//true琛ㄧずplayer鑳藉鎴愬姛绉诲姩鍒颁笅涓�涓瀛�
+ 	moveComplete=false;//true琛ㄧず绉诲姩鍒颁笅涓�涓钩鍙板姩浣滃畬姣曘��
+
 }
 
 

@@ -7,12 +7,17 @@
 
 #include "GameOverLayer.h"
 #include "WelcomeScene.h"
+#include "IconvTest.h"
+#include "iconv.h"
+#include "string.h"
 USING_NS_CC;
 bool GameOverLayer::init(){
 
 	if(!Layer::init()){
 		return false;
 	}
+
+
 
 	Size  MyWinSize = Director::getInstance()->getVisibleSize();
 

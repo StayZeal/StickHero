@@ -7,8 +7,10 @@
 
 #include "WelcomeScene.h"
 #include "BackgroundLayer.h"
+
 #include "jni.h"
 #include "../platform/android/jni/JniHelper.h"
+
 USING_NS_CC;
 bool WelcomeScene::init(){
 	if(!Scene::init()){
@@ -58,9 +60,4 @@ void WelcomeScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event){
 			}
 		}
 }
-WelcomeScene::WelcomeScene() {
-}
-
-WelcomeScene::~WelcomeScene() {
-}
-
+ 
