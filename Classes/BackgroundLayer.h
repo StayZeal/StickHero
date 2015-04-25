@@ -1,7 +1,7 @@
 /*
  * BackgroundLayer.h
  *
- *  Created on: 2015年4月11日
+ *  Created on: 2015骞�4鏈�11鏃�
  *      Author: Administrator
  */
 
@@ -14,7 +14,7 @@
 USING_NS_CC;
 class BackgroundLayer:public Layer {
 private:
-	static const int STICK_SPEED = 2;//棍子增长的速度，即游戏的难度；
+	static const int STICK_SPEED = 2;//stick增长的速度
 	static const int BG_SPEED = 50;
 	bool isStart;
 	Size MyWinSize;
@@ -23,25 +23,20 @@ private:
 	Sprite* Image_One;
 	Sprite* Image_Two;
 	Sprite* stageSprite[3];
-	int stageNumber;//初始值设为1
-	int NowStage;//player所在的stage
-	int LastStage;//player所在前一个stage
-	int NextStage;//player将要走到的stage
-/*
-	int stageNumber=1;//初始值设为1
-	int NowStage=0;//player所在的stage
-	int LastStage=2;//player所在前一个stage
-	int NextStage=1;//player将要走到的stage
-*/
+	int stageNumber;
+	int NowStage;
+	int LastStage;
+	int NextStage;
+
 	Player* player;
 	Sprite* stick;
-	double TouchLength;//用来存储我们棍子的长度
+	double TouchLength;
 	double DestLengthMin;
 	double DestLengthMax;
     int scoreCount;
-	bool successFlag;//true表示player能够成功移动到下一个梯子
-	bool moveComplete;//true表示移动到下一个平台动作完毕。
-	Label* scoreTitle;//记录分数
+	bool successFlag;//
+	bool moveComplete;//
+	Label* scoreTitle;//
 
 
 	Vec2 StickPoint;
@@ -53,10 +48,11 @@ private:
 
 public:
 	BackgroundLayer();
+	~BackgroundLayer();
 	CREATE_FUNC(BackgroundLayer);
 	bool init();
 	void Start(Ref* pSender);
-	void bgMove(float);//背景的移动
+	void bgMove(float);//背景移动
 
 	void addStage();
 	void stageMove();
@@ -69,7 +65,7 @@ public:
 	void StopStick();
 	void RotateStickAndGo();
 	void stickCallBack(bool successFlag);
-	void initStick();//隐藏stick
+	void initStick();//初始化stick
 	void stopAudio(int audioId);
 	void gameOver();
 };

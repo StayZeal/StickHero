@@ -1,10 +1,4 @@
-/*
- * BackgroundLayer.cpp
- *
- *  Created on: 2015骞�4鏈�11鏃�
- *      Author: Administrator
- */
-
+ 
 #include "BackgroundLayer.h"
 #include "IconvTest.h"
 
@@ -122,7 +116,7 @@ bool BackgroundLayer::init() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	/**
-	 * 娣诲姞鑻遍泟
+	 * 添加palyer并初始化
 	 */
 	player = new Player();
 	player->init();
@@ -141,7 +135,7 @@ bool BackgroundLayer::init() {
 void BackgroundLayer::Start(Ref* pSender) {
 
 	log("%s","BackgroundLayer::Start()");
-	isStart=true;//琛ㄧず娓告垙寮�濮�
+	isStart=true;//代表游戏开始
 
 	this->removeChild(menu);
 	this->removeChild(GameName);
@@ -159,8 +153,8 @@ void BackgroundLayer::Start(Ref* pSender) {
 	log("测试");
 
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	//scoreTitle = Label::createWithBMFont("fonts/bitmapFontChinese.fnt",toStr,TextHAlignment::CENTER,50);
-	scoreTitle = Label::createWithTTF(toStr, "fonts/arial.ttf", 50);
+	scoreTitle = Label::createWithBMFont("fonts/bitmapFontChinese.fnt","中文测试毛白");
+//	scoreTitle = Label::createWithTTF(toStr, "fonts/arial.ttf", 50);
 	//scoreTitle = Label::createWithTTF(toStr, "fonts/Marker Felt.ttf", 50);
 	scoreTitle->setPosition(Vec2(origin.x + MyWinSize.width/2,origin.y + MyWinSize.height/2));
 	this->addChild(scoreTitle, 1);
@@ -203,12 +197,12 @@ void BackgroundLayer::stageMove() {
 	log("BackgroundLayer::stageMove()-->stageNumber:%d",stageNumber);
 
 	/**
-	 * 鍋滄鑳屾櫙绉诲姩
+	 * 停止背景移动
 	 */
 	this->unschedule(schedule_selector(BackgroundLayer::bgMove));
 
 	/*
-	 * 鍋滄鎾斁璧拌矾闊虫晥锛坘ick.ogg锛�
+	 * 停止音效
 	 */
 	SimpleAudioEngine::getInstance()->pauseEffect(kickId);
 	NowStage = stageNumber == 0 ? 2 : stageNumber - 1;
@@ -227,11 +221,11 @@ void BackgroundLayer::stageMove() {
 	initStick();
 
 	/*
-	 * 璺熼殢stage杩涜绉诲姩
+	 *同步player和stick的位置
 	 */
 	player->getPlayer()->runAction(MoveTo::create(0.2,Vec2(100, stageSprite[0]->getContentSize().height )));
 	addStage();
-	successFlag = false;//閲嶇疆successFlag
+	successFlag = false;//设置successFlag
 }
 
 bool BackgroundLayer::onTouchBegan(Touch* pTouch, Event* pEvent)
@@ -249,17 +243,17 @@ void BackgroundLayer::onTouchMoved(Touch* pTouch, Event* pEvent)
 void BackgroundLayer::onTouchEnded(Touch* pTouch, Event* pEvent)
 {
 	if(isStart){
-		StopStick();
-		RotateStickAndGo();
+		StopStick();//stick停止变长
+		RotateStickAndGo();//stick 开始旋转
 	}
 }
 
 void BackgroundLayer::addStick()
 {
 	log("%s","BackgroundLayer::addStick()");
-	stick->setScaleY(1);//杩樺師妫嶅瓙
+	stick->setScaleY(1);//初始化stck长度
 	stick->setRotation(0);
-    stick->setPosition(StickPoint);
+    stick->setPosition(StickPoint);//初始化stick位置
     this->schedule(schedule_selector(BackgroundLayer::StickLength));
 }
 
@@ -280,7 +274,7 @@ void BackgroundLayer::RotateStickAndGo(){
 	DestLengthMin = abs(stageSprite[NextStage]->getPositionX() - stageSprite[NowStage]->getPositionX()) - stageSprite[NextStage]->getContentSize().width*stageSprite[NextStage]->getScaleX()/2 - stageSprite[NowStage]->getContentSize().width*stageSprite[NowStage]->getScaleX()/2;
 
 	DestLengthMax = DestLengthMin + stageSprite[NextStage]->getContentSize().width*stageSprite[NextStage]->getScaleX();
-	RotateTo* Ro_Stick = RotateTo::create(1, 90); //鏃嬭浆90搴�
+	RotateTo* Ro_Stick = RotateTo::create(1, 90); //旋转90度
 	RotateTo* RoDown_Stick = RotateTo::create(1,180);
 
 	log("ToTouchLength:%f,DestLengthMin:%f,DestLengthMax:%f",TouchLength,DestLengthMin,DestLengthMax);
@@ -288,19 +282,12 @@ void BackgroundLayer::RotateStickAndGo(){
 	Ro_Stick->setTag(1);
 	if(TouchLength<DestLengthMin || TouchLength > DestLengthMax)
 	{
-
-		scoreCount++;//璁板綍鍒嗘暟
-//        scoreTitle->setString(std::to_string(scoreCount));
-
-		scoreTitle->setString(StringUtils::toString(scoreCount));
-
 		successFlag=false;
-	    //stick->runAction(RoDown_Stick);
 	}
 	else if(TouchLength >= DestLengthMin && TouchLength <=DestLengthMax)
 	{
+		scoreCount++;//记录分数
 		successFlag=true;
-	   // stick->runAction(Ro_Stick);
 	}
 
 	log("BackgroundLayer::RotateStickAndGo()-->NextStage:%d",NextStage);
@@ -311,6 +298,7 @@ void BackgroundLayer::RotateStickAndGo(){
 		actionN= Sequence::create(Ro_Stick,
 					 CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stickCallBack,this,successFlag)),
 					 NULL);
+
 	}else{
 		actionN= Sequence::create(Ro_Stick,
 			 CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stickCallBack,this,successFlag)),
@@ -323,16 +311,11 @@ void BackgroundLayer::RotateStickAndGo(){
 void BackgroundLayer::stickCallBack(bool successFlag){
 
 
-	 kickId = SimpleAudioEngine::getInstance()->playEffect("res/sound/kick.ogg",false);
+	 kickId = SimpleAudioEngine::getInstance()->playEffect("res/sound/kick.ogg",true);
 
 	if(successFlag==true){
 
 		auto playMove = MoveTo::create(0.2,Vec2( stageSprite[NextStage]->getPositionX(),stageSprite[NextStage]->getContentSize().height));
-		/**
-		 * palyer璧板埌stage涔嬪悗锛宻tage鍐嶈繘琛岀Щ鍔ㄣ��
-		 */
-
-
 		player->Walk();
 		auto playSeq  =Sequence::create(playMove,
 					CallFuncN::create(CC_CALLBACK_0(BackgroundLayer::stageMove,this)),
@@ -340,13 +323,16 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 					);
 		player->getPlayer()->runAction(playSeq);
 		/*
-		 *鑳屾櫙杩涜绉诲姩
+		 *停止背景移动
 		 */
 		this->schedule(schedule_selector(BackgroundLayer::bgMove));
-		moveComplete = true;
 
+		/*
+		 * 移动之后，修改分数
+		 */
+//      scoreTitle->setString(std::to_string(scoreCount));
+		scoreTitle->setString(StringUtils::toString(scoreCount));
 	}else{
-
 		auto playPoint = Vec2(
 				  stageSprite[NowStage]->getPositionX()
 				  + stageSprite[NowStage]->getContentSize().width*stageSprite[NowStage]->getScaleX()/2
@@ -354,7 +340,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 				  + player->getPlayer()->getContentSize().width/3,
 				    stageSprite[NextStage]->getContentSize().height
 			 );
-		//player鎺夎惤涔嬪悗鐨勪綅缃�
+		//player掉落后的位置
 		auto playerDownPoint = Vec2(
 				  stageSprite[NowStage]->getPositionX()
 				  + stageSprite[NowStage]->getContentSize().width*stageSprite[NowStage]->getScaleX()/2
@@ -367,6 +353,7 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 				                          playerDown,
 										  NULL);
 		player->getPlayer()->runAction(playerSeq);
+
 		RotateTo* RoDown_Stick = RotateTo::create(1,180);
 		stick->runAction(RoDown_Stick);
 
@@ -376,8 +363,8 @@ void BackgroundLayer::stickCallBack(bool successFlag){
 
 void BackgroundLayer::initStick(){
 
-	log("BackgroundLayer::hideStick()");
-	stick->setScaleY(1);//杩樺師妫嶅瓙
+	log("BackgroundLayer::initStick()");
+	stick->setScaleY(1);//初始化stick长度
 	stick->setRotation(0);
 	stick->setPosition(StickPoint);
 }
@@ -409,21 +396,24 @@ void BackgroundLayer::bgMove(float){
 }
 void BackgroundLayer::gameOver(){
 	/*
-	* 娓告垙缁撴潫锛屾樉绀轰粠鏂板紑濮嬬晫闈�
+	* 游戏结束，添加结束界面
 	*/
 	gameOverLayer = GameOverLayer::create();
 	this->addChild(gameOverLayer,8);
 }
 BackgroundLayer::BackgroundLayer(){
  	isStart = false;
-	stageNumber=1;//鍒濆鍊艰涓�1
-	NowStage=0;//player鎵�鍦ㄧ殑stage
-	LastStage=2;//player鎵�鍦ㄥ墠涓�涓猻tage
-	NextStage=1;//player灏嗚璧板埌鐨剆tage
+	stageNumber=1;//设置第一个stage为1
+	NowStage=0;//player所在stage
+	LastStage=2;//player上一个stage
+	NextStage=1;//player下一个stage
 	scoreCount=0;
- 	successFlag=false;//true琛ㄧずplayer鑳藉鎴愬姛绉诲姩鍒颁笅涓�涓瀛�
- 	moveComplete=false;//true琛ㄧず绉诲姩鍒颁笅涓�涓钩鍙板姩浣滃畬姣曘��
+ 	successFlag=false;//true 移动成功的标志
+ 	moveComplete=false;//true 移动完成的标志
 
+}
+BackgroundLayer::~BackgroundLayer(){
+	delete player;
 }
 
 

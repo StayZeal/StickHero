@@ -1,10 +1,3 @@
-/*
- * GameOverLayer.cpp
- *
- *  Created on: 2015年4月15日
- *      Author: Administrator
- */
-
 #include "GameOverLayer.h"
 #include "WelcomeScene.h"
 #include "IconvTest.h"
@@ -26,7 +19,7 @@ bool GameOverLayer::init(){
 			NULL,
 			CC_CALLBACK_0(GameOverLayer::reStart,this)
 			);
-	MenuItemSprite * homeBtn = MenuItemSprite::create(Sprite::create("res/image/uires_8.png"),
+	MenuItemSprite *homeBtn = MenuItemSprite::create(Sprite::create("res/image/uires_8.png"),
 			Sprite::create("res/image/uires_8.png"),
 			NULL,
 			CC_CALLBACK_0(GameOverLayer::home,this)
